@@ -1,0 +1,24 @@
+{
+    "manifest_version": 3,
+    "name": "LeetGrow",
+    "version": "1.0",
+    "description": "Generate Test Cases for LeetCode Problems and Analyze user's code to detect potential bugs.",
+    "permissions": ["activeTab", "scripting"],
+    "host_permissions": ["https://leetcode.com/problems/*"],
+    "background": {
+      "service_worker": "background.js",
+      "type":"module"
+    },
+    "action": {
+      "default_icon": {
+        "16": "icon.png",
+        "48": "icon.png",
+        "128": "icon.png"
+      }
+    }
+    
+  }
+
+
+
+  
