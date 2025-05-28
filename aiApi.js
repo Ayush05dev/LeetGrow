@@ -80,40 +80,111 @@ export async function sendToGeminiAPI(prompt) {
 
 
 export async function sendTestcasePromptToGeminiAPI(questionContent) {
-  const prompt = `Given the following LeetCode problem description:
-  ${questionContent}
+  // const prompt = `Given the following LeetCode problem description:
+  // ${questionContent}
   
-  Your task is to deeply analyze the problem and generate **eight test cases** that cover all edge cases and verify the correctness of the solution.
+  // Your task is to deeply analyze the problem and generate **eight test cases** that cover all edge cases and verify the correctness of the solution.
   
-  Only output the test case inputs, each input on a new line, exactly in the following format:
+  // Only output the test case inputs, each input on a new line, exactly in the following format:
   
-  Example 1:
-  Input: nums = [1,3,2,3,3], k = 2
-  Input: nums = [1,4,2,1], k = 3
+  // Example 1:
+  // Input: nums = [1,3,2,3,3], k = 2
+  // Input: nums = [1,4,2,1], k = 3
   
-  Output format:
+  // Output format:
+  // [1,3,2,3,3]
+  // 2
+  // [1,4,2,1]
+  // 3
+  
+  // Example 2:
+  // Input: nums1 = [1,2,2,1], nums2 = [2,2], k = 3, m = 6
+  // Input: nums1 = [4,9,5], nums2 = [9,4,9,8,4], k = 5, n = 8
+  
+  // Output format:
+  // [1,2,2,1]
+  // [2,2]
+  // 3
+  // 6
+  // [4,9,5]
+  // [9,4,9,8,4]
+  // 5
+  // 8
+  
+  // Only follow this exact output style with no additional explanation or formatting.`;
+
+  // your existing function that calls Gemini API
+ 
+  const prompt = `You are given a LeetCode-style problem:
+  
+${questionContent}
+
+Your task is to deeply analyze the problem and generate **exactly eight (8) test cases** that cover all possible edge cases and verify the correctness of a solution.
+
+🚨 VERY IMPORTANT 🚨: Only output **the test case inputs**, one **value per line**, and **strictly follow the exact format and order shown below**. 
+
+🔒 DO NOT include any explanation or extra formatting.  
+🔒 DO NOT put multiple values in a single line.  
+🔒 DO NOT add quotation marks, variable names, or labels like "Input:"
+
+---
+
+🧪 Format Instructions:
+
+- If the problem input has variables like:  
+  \`nums = [1,3,2,3,3]\`, \`k = 2\`  
+  then output should be:
+  \`\`\`
   [1,3,2,3,3]
   2
-  [1,4,2,1]
-  3
-  
-  Example 2:
-  Input: nums1 = [1,2,2,1], nums2 = [2,2], k = 3, m = 6
-  Input: nums1 = [4,9,5], nums2 = [9,4,9,8,4], k = 5, n = 8
-  
-  Output format:
+  \`\`\`
+
+- If input has more than one array and multiple values like:  
+  \`nums1 = [1,2,2,1]\`, \`nums2 = [2,2]\`, \`k = 3\`, \`m = 6\`  
+  then output should be:
+  \`\`\`
   [1,2,2,1]
   [2,2]
   3
   6
-  [4,9,5]
-  [9,4,9,8,4]
-  5
-  8
-  
-  Only follow this exact output style with no additional explanation or formatting.`;
+  \`\`\`
 
-  // your existing function that calls Gemini API
+---
+
+✅ Example Output (Follow This Order Exactly):
+
+Example 1 (2 test cases):
+\`\`\`
+[1,3,2,3,3]
+2
+[1,4,2,1]
+3
+\`\`\`
+
+Example 2 (2 test cases):
+\`\`\`
+[1,2,2,1]
+[2,2]
+3
+6
+[4,9,5]
+[9,4,9,8,4]
+5
+8
+\`\`\`
+
+---
+
+⚠️ Summary of Output Rules:
+- Only raw input values, **one per line**.
+- Maintain the **same order of inputs** as shown in the problem description.
+- No headings, labels, or explanations.
+- Use **exact array syntax** like \`[1,2,3]\` and numbers like \`5\`.
+
+Now, using this format and the given problem, generate 8 test case inputs.
+`;
+
+ 
   return sendToGeminiAPI(prompt);
 }
 

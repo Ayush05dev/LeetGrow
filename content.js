@@ -210,25 +210,96 @@ function scrapeLeetCodeData() {
 
   if (leetCodeData.title) {
     const outputHTML = `
-    <div class="output-box" style="padding:3px; color:yellow; margin-bottom:10px;" >
-        <div style="font-weight:800">Question Title: </div>
-      <div>${leetCodeData.title} </div>
-    </div>
-  `;
+  <div class="output-box" style="padding: 3px; color: #FFFFFF; margin-bottom: 20px;">
+    <div style="font-size: 20px; font-family: 'Segoe UI', sans-serif; padding:5px 0">Question Title</div>
+    <div>${leetCodeData.title}</div>
+  </div>
+`;
+
 
     document.getElementById("output").innerHTML = outputHTML;
   }
 }
 
+// function generateTestCases() {
+//   const temp = document.createElement("div");
+//   temp.style.color = "White";
+//   temp.style.marginLeft = "10px";
+
+//   if (!leetCodeData.content) {
+//     // const txt="Please scrape the question first!";
+//     // temp.textContent=txt;
+//     // document.getElementById("output").appendChild(temp);
+//     alert("Please scrape the question first!");
+//     return;
+//   }
+
+//   if (leetCodeData.testcases) {
+//     alert("Testcases already generated");
+//     return;
+//   }
+
+//   const output = document.getElementById("output");
+
+//   const txt = "Generating Test Cases...";
+//   temp.textContent = txt;
+//   output.appendChild(temp);
+
+//   chrome.runtime.sendMessage(
+//     {
+//       action: "generateTestCases",
+//       payload: {
+//         content: leetCodeData.content,
+//       },
+//     },
+//     (response) => {
+//       const { testCases } = response || {};
+//       output.removeChild(temp);
+//       if (testCases) {
+//         // Create parent container (styled similar to "Thinking of Test Cases")
+//         const TestCasecontainer = document.createElement("div");
+//         TestCasecontainer.style.padding = "10px";
+//         TestCasecontainer.style.border = "1px solid #ccc";
+//         TestCasecontainer.style.borderRadius = "8px";
+
+//         // Add heading
+//         const heading = document.createElement("h3");
+//         heading.textContent = "Test Cases";
+//         heading.style.marginBottom = "15px";
+//         heading.style.color = "white";
+//         heading.style.fontFamily = "Arial, sans-serif";
+//         TestCasecontainer.appendChild(heading);
+
+//         // Create the wrapper div for test cases (with white background and border radius)
+//         const testCasesDiv = document.createElement("div");
+//         testCasesDiv.style.backgroundColor = "white";
+//         testCasesDiv.style.borderRadius = "8px";
+//         testCasesDiv.style.padding = "15px";
+//         testCasesDiv.style.marginBottom = "15px";
+
+//         const pre = document.createElement("pre");
+//         pre.textContent = testCases;
+//         pre.style.color = "black";
+//         testCasesDiv.appendChild(pre);
+
+//         TestCasecontainer.appendChild(testCasesDiv);
+
+//         output.appendChild(TestCasecontainer);
+
+//         leetCodeData.testcases = testCases;
+//       } else {
+//         alert("Failed to generate testcases.");
+//       }
+//     }
+//   );
+// }
+
 function generateTestCases() {
   const temp = document.createElement("div");
-  temp.style.color = "White";
+  temp.style.color = "#FFFFFF";
   temp.style.marginLeft = "10px";
 
   if (!leetCodeData.content) {
-    // const txt="Please scrape the question first!";
-    // temp.textContent=txt;
-    // document.getElementById("output").appendChild(temp);
     alert("Please scrape the question first!");
     return;
   }
@@ -254,36 +325,46 @@ function generateTestCases() {
     (response) => {
       const { testCases } = response || {};
       output.removeChild(temp);
+
       if (testCases) {
-        // Create parent container (styled similar to "Thinking of Test Cases")
-        const TestCasecontainer = document.createElement("div");
-        TestCasecontainer.style.padding = "10px";
-        TestCasecontainer.style.border = "1px solid #ccc";
-        TestCasecontainer.style.borderRadius = "8px";
+        // Create main container with modern look
+        const testCaseContainer = document.createElement("div");
+        testCaseContainer.style.padding = "20px";
+        testCaseContainer.style.backgroundColor = "#1c1c28";  // Dark background
+        testCaseContainer.style.border = "1px solid #3A82F7"; // Accent border
+        testCaseContainer.style.borderRadius = "12px";
+        testCaseContainer.style.marginTop = "20px";
+        testCaseContainer.style.boxShadow = "0 4px 12px rgba(58, 130, 247, 0.2)";
+        testCaseContainer.style.fontFamily = "'Segoe UI', sans-serif";
 
         // Add heading
         const heading = document.createElement("h3");
         heading.textContent = "Test Cases";
-        heading.style.marginBottom = "15px";
-        heading.style.color = "white";
-        heading.style.fontFamily = "Arial, sans-serif";
-        TestCasecontainer.appendChild(heading);
+        heading.style.marginBottom = "16px";
+        heading.style.color = "#3A82F7";
+        heading.style.fontSize = "22px";
+        heading.style.fontWeight = "600";
+        testCaseContainer.appendChild(heading);
 
-        // Create the wrapper div for test cases (with white background and border radius)
+        // Create the content box for test cases
         const testCasesDiv = document.createElement("div");
-        testCasesDiv.style.backgroundColor = "white";
+        testCasesDiv.style.backgroundColor = "#0d1117";
         testCasesDiv.style.borderRadius = "8px";
-        testCasesDiv.style.padding = "15px";
-        testCasesDiv.style.marginBottom = "15px";
+        testCasesDiv.style.padding = "16px";
+        testCasesDiv.style.overflowX = "auto";
+        testCasesDiv.style.maxHeight = "400px";
+        testCasesDiv.style.border = "1px solid #2c2f36";
 
         const pre = document.createElement("pre");
         pre.textContent = testCases;
-        pre.style.color = "black";
+        pre.style.color = "#E5E5E5";
+        pre.style.fontSize = "14px";
+        pre.style.lineHeight = "1.6";
+        pre.style.whiteSpace = "pre-wrap";
+
         testCasesDiv.appendChild(pre);
-
-        TestCasecontainer.appendChild(testCasesDiv);
-
-        output.appendChild(TestCasecontainer);
+        testCaseContainer.appendChild(testCasesDiv);
+        output.appendChild(testCaseContainer);
 
         leetCodeData.testcases = testCases;
       } else {
@@ -292,6 +373,7 @@ function generateTestCases() {
     }
   );
 }
+
 
 async function analyzeCode() {
   const temp = document.createElement("div");
@@ -436,9 +518,114 @@ async function analyzeCode() {
   }
 }
 
+// function approachHintGeneration() {
+//   const temp = document.createElement("div");
+//   temp.style.color = "White";
+//   temp.style.marginLeft = "10px";
+
+//   if (!leetCodeData.content) {
+//     alert("Please scrape the question first!");
+//     return;
+//   }
+
+//   if (leetCodeData.hints) {
+//     alert("Hints already generated");
+//     return;
+//   }
+
+//   const output = document.getElementById("output");
+
+//   const txt = "Generating Hint for solution...";
+//   temp.textContent = txt;
+//   output.appendChild(temp);
+
+//   chrome.runtime.sendMessage(
+//     {
+//       action: "approachHintGenerate",
+//       payload: {
+//         content: leetCodeData.content,
+//       },
+//     },
+//     (response) => {
+//       output.removeChild(temp);
+//       const { approachHint } = response || {};
+
+//       if (approachHint) {
+//         // Create parent container
+//         const approachHintContainer = document.createElement("div");
+//         approachHintContainer.style.padding = "10px";
+//         approachHintContainer.style.border = "1px solid #ccc";
+//         approachHintContainer.style.borderRadius = "8px";
+
+//         // Add heading
+//         const heading = document.createElement("h3");
+//         heading.textContent = "Hints";
+//         heading.style.marginBottom = "15px";
+//         heading.style.color = "white";
+//         heading.style.fontFamily = "Arial, sans-serif";
+//         approachHintContainer.appendChild(heading);
+
+//         // Extract hints using regex
+//         const hints = approachHint
+//           .trim()
+//           .split("\n")
+//           .filter((line) => /^Hint\s*\d+:/.test(line.trim()));
+
+//         hints.forEach((hintText, index) => {
+//           // Create accordion container (individual hint box)
+//           const accordionItem = document.createElement("div");
+//           accordionItem.style.marginBottom = "8px";
+//           accordionItem.style.border = "1px solid #ccc";
+//           accordionItem.style.borderRadius = "5px";
+//           accordionItem.style.overflow = "hidden";
+
+//           // Create header button
+//           const header = document.createElement("button");
+//           header.textContent = `Hint ${index + 1}`;
+//           header.style.width = "100%";
+//           header.style.textAlign = "left";
+//           header.style.padding = "10px";
+//           header.style.backgroundColor = "blue";
+//           header.style.color = "white";
+//           header.style.border = "none";
+//           header.style.cursor = "pointer";
+//           header.style.fontWeight = "bold";
+
+//           // Create content container
+//           const content = document.createElement("div");
+//           const parts = hintText.split(":");
+//           content.textContent =
+//             parts.length > 1 ? parts.slice(1).join(":").trim() : hintText;
+
+//           content.style.padding = "10px";
+//           content.style.display = "none";
+//           content.style.backgroundColor = "#f4f4f4";
+//           content.style.color = "#333";
+
+//           // Toggle display on click
+//           header.addEventListener("click", () => {
+//             content.style.display =
+//               content.style.display === "none" ? "block" : "none";
+//           });
+
+//           accordionItem.appendChild(header);
+//           accordionItem.appendChild(content);
+//           approachHintContainer.appendChild(accordionItem);
+//         });
+
+//         // Append the whole container to output
+//         output.appendChild(approachHintContainer);
+//         leetCodeData.hints = approachHint;
+//       } else {
+//         alert("Failed to generate approach hints.");
+//       }
+//     }
+//   );
+// }
+
 function approachHintGeneration() {
   const temp = document.createElement("div");
-  temp.style.color = "White";
+  temp.style.color = "white";
   temp.style.marginLeft = "10px";
 
   if (!leetCodeData.content) {
@@ -469,61 +656,86 @@ function approachHintGeneration() {
       const { approachHint } = response || {};
 
       if (approachHint) {
-        // Create parent container
         const approachHintContainer = document.createElement("div");
-        approachHintContainer.style.padding = "10px";
-        approachHintContainer.style.border = "1px solid #ccc";
-        approachHintContainer.style.borderRadius = "8px";
+        approachHintContainer.style.padding = "15px";
+        approachHintContainer.style.borderRadius = "10px";
+        approachHintContainer.style.backgroundColor = "#1e1e2f";
+        approachHintContainer.style.boxShadow = "0 4px 15px rgba(0, 0, 0, 0.2)";
+        approachHintContainer.style.marginTop = "15px";
 
-        // Add heading
         const heading = document.createElement("h3");
         heading.textContent = "Hints";
-        heading.style.marginBottom = "15px";
-        heading.style.color = "white";
-        heading.style.fontFamily = "Arial, sans-serif";
+        heading.style.marginBottom = "20px";
+        heading.style.color = "#FFFFFF";
+        heading.style.fontFamily = "Segoe UI, sans-serif";
+        heading.style.fontSize = "20px";
         approachHintContainer.appendChild(heading);
 
-        // Extract hints using regex
         const hints = approachHint
           .trim()
           .split("\n")
           .filter((line) => /^Hint\s*\d+:/.test(line.trim()));
 
         hints.forEach((hintText, index) => {
-          // Create accordion container (individual hint box)
           const accordionItem = document.createElement("div");
-          accordionItem.style.marginBottom = "8px";
-          accordionItem.style.border = "1px solid #ccc";
-          accordionItem.style.borderRadius = "5px";
+          accordionItem.style.marginBottom = "10px";
+          accordionItem.style.borderRadius = "8px";
           accordionItem.style.overflow = "hidden";
+          accordionItem.style.border = "1px solid #333";
+          accordionItem.style.backgroundColor = "#2a2a3d";
 
-          // Create header button
           const header = document.createElement("button");
           header.textContent = `Hint ${index + 1}`;
           header.style.width = "100%";
           header.style.textAlign = "left";
-          header.style.padding = "10px";
-          header.style.backgroundColor = "blue";
-          header.style.color = "white";
+          header.style.padding = "12px 16px";
+          header.style.backgroundColor = "#3A82F7";
+          header.style.color = "#FFFFFF";
           header.style.border = "none";
           header.style.cursor = "pointer";
-          header.style.fontWeight = "bold";
+          header.style.fontWeight = "600";
+          header.style.fontSize = "15px";
+          header.style.borderRadius = "8px 8px 0 0";
+          header.style.transition = "background-color 0.3s";
 
-          // Create content container
+          // Hover effect
+          header.addEventListener("mouseover", () => {
+            header.style.backgroundColor = "#2563EB";
+          });
+          header.addEventListener("mouseout", () => {
+            header.style.backgroundColor = "#3A82F7";
+          });
+
           const content = document.createElement("div");
           const parts = hintText.split(":");
           content.textContent =
             parts.length > 1 ? parts.slice(1).join(":").trim() : hintText;
 
-          content.style.padding = "10px";
+          content.style.padding = "14px 18px";
           content.style.display = "none";
-          content.style.backgroundColor = "#f4f4f4";
-          content.style.color = "#333";
+          content.style.backgroundColor = "#1F1F2B";
+          content.style.color = "#E0E0E0";
+          content.style.fontSize = "14px";
+          content.style.lineHeight = "1.6";
+          content.style.borderTop = "1px solid #444";
 
-          // Toggle display on click
+          // Optional: Add smooth transition
+          content.style.maxHeight = "0";
+          content.style.overflow = "hidden";
+          content.style.transition = "max-height 0.3s ease, padding 0.3s ease";
+
+          // Toggle animation
           header.addEventListener("click", () => {
-            content.style.display =
-              content.style.display === "none" ? "block" : "none";
+            const isVisible = content.style.display === "block";
+            if (isVisible) {
+              content.style.maxHeight = "0";
+              setTimeout(() => {
+                content.style.display = "none";
+              }, 300);
+            } else {
+              content.style.display = "block";
+              content.style.maxHeight = "300px";
+            }
           });
 
           accordionItem.appendChild(header);
@@ -531,7 +743,6 @@ function approachHintGeneration() {
           approachHintContainer.appendChild(accordionItem);
         });
 
-        // Append the whole container to output
         output.appendChild(approachHintContainer);
         leetCodeData.hints = approachHint;
       } else {
@@ -540,6 +751,7 @@ function approachHintGeneration() {
     }
   );
 }
+
 
 function generateThinkTestCases() {
   const temp = document.createElement("div");
@@ -781,44 +993,110 @@ catch(error){
     floatingWindow.style.minHeight = "300px";
     floatingWindow.style.maxWidth = "90vw";
     floatingWindow.style.maxHeight = "90vh";
+    floatingWindow.style.borderRadius = "10px";
+
+
+//     floatingWindow.innerHTML = `
+//   <div id="staticContainer" style="position:static;">
+//   <div id="floatingHeader" style="cursor:move;padding:10px;background-color:	#1E1E2F;border-bottom:1px solid #ccc;display:flex;justify-content:space-between;align-items:center; padding: 5px 15px; ">
+//     <p style="font-size: 20px; font-weight: bold; color:#FFFFFF; margin: 0;">LeetGrow</p>
+//     <button id="closeFloatingWindow" style="margin-left:auto;background-color:#FF4C4C;color:	#FFFFFF;border:none;padding:5px 10px;border-radius:4px;cursor:pointer;">X</button>
+//   </div>
+//   </div>
+//   <div id="floatingContent" style=" background-color:#2D2F36; padding: 5px 15px; position:fixed">
+//     <button class="floating-btn" id="scrapeBtn">Scrape</button>
+//     <button class="floating-btn" id="hintBtn">Hint</button>
+//     <button class="floating-btn" id="testcasesBtn">TestCases</button>
+//     <button class="floating-btn" id="thinkTestcasesBtn">Think TestCases</button>
+//     <button class="floating-btn" id="analyzeBtn">Analyze</button>
+//     <button class="floating-btn" id="completeCode">Full Code</button>
+
+//   </div>
+  
+//   <div style="background-color:#1F1F2B; padding:10px 15px;  color:#E0E0E0" id="output"  >
+//     There exist two undirected trees with n and m nodes, with distinct labels in ranges [0, n - 1] and [0, m - 1], respectively.
+
+// You are given two 2D integer arrays edges1 and edges2 of lengths n - 1 and m - 1, respectively, where edges1[i] = [ai, bi] indicates that there is an edge between nodes ai and bi in the first tree and edges2[i] = [ui, vi] indicates that there is an edge between nodes ui and vi in the second tree. You are also given an integer k.
+
+// Node u is target to node v if the number of edges on the path from u to v is less than or equal to k. Note that a node is always target to itself.
+
+// Return an array of n integers answer, where answer[i] is the maximum possible number of nodes target to node i of the first tree if you have to connect one node from the first tree to another node in the second tree.
+
+// Note that queries are independent from each other. That is, for every query you will remove the added edge before proceeding to the next query.
+// There exist two undirected trees with n and m nodes, with distinct labels in ranges [0, n - 1] and [0, m - 1], respectively.
+
+// You are given two 2D integer arrays edges1 and edges2 of lengths n - 1 and m - 1, respectively, where edges1[i] = [ai, bi] indicates that there is an edge between nodes ai and bi in the first tree and edges2[i] = [ui, vi] indicates that there is an edge between nodes ui and vi in the second tree. You are also given an integer k.
+
+// Node u is target to node v if the number of edges on the path from u to v is less than or equal to k. Note that a node is always target to itself.
+
+// Return an array of n integers answer, where answer[i] is the maximum possible number of nodes target to node i of the first tree if you have to connect one node from the first tree to another node in the second tree.
+
+// Note that queries are independent from each other. That is, for every query you will remove the added edge before proceeding to the next query.
+//     </div>
+// `;
+
+// #2D2F36
 
     floatingWindow.innerHTML = `
-  <div id="staticContainer" style="position:static;">
-  <div id="floatingHeader" style="cursor:move;padding:10px;background:#f0f0f0;border-bottom:1px solid #ccc;display:flex;justify-content:space-between;align-items:center; background-color:black;">
-    <p style="font-size: 20px; font-weight: bold; color: white; margin: 0;">LeetGrow</p>
-    <button id="closeFloatingWindow" style="margin-left:auto;background:#e74c3c;color:white;border:none;padding:5px 10px;border-radius:4px;cursor:pointer;">X</button>
+  <div id="floatingHeader" style="position:sticky;top:0;cursor:move;padding:10px 15px;background-color:#1E1E2F;border-bottom:1px solid #ccc;display:flex;justify-content:space-between;align-items:center;z-index:10;">
+    <p style="font-size: 20px; font-weight: bold; color:#FFFFFF; margin: 0;">LeetGrow</p>
+    <button id="closeFloatingWindow" style="background-color:#FF4C4C;color:#FFFFFF;border:none;padding:5px 10px;border-radius:4px;cursor:pointer;">X</button>
   </div>
-  <div id="floatingContent" style="padding:2px; background-color:orange">
+
+  <div id="floatingContent" style="position:sticky;top:52px;background-color:#1A1A40;padding:10px 10px;display:flex;flex-wrap:wrap;gap:5px;z-index:9;">
     <button class="floating-btn" id="scrapeBtn">Scrape</button>
-    <button class="floating-btn" id="hintBtn">Hint</button>
-    <button class="floating-btn" id="testcasesBtn">TestCases</button>
-    <button class="floating-btn" id="thinkTestcasesBtn">Think TestCases</button>
-    <button class="floating-btn" id="analyzeBtn">Analyze</button>
+    <button class="floating-btn" id="hintBtn">Hints</button>
+    <button class="floating-btn" id="testcasesBtn">Test Cases</button>
+    <button class="floating-btn" id="thinkTestcasesBtn">Think Test Cases</button>
+    <button class="floating-btn" id="analyzeBtn">Analyze Code</button>
     <button class="floating-btn" id="completeCode">Full Code</button>
-
   </div>
-  </div>
-  <div style="background-color:; padding:1px; margin-top:10px" id="output"  >
 
-    </div>
+  <div id="output" style="padding:15px;background-color:#1F1F2B;color:#E0E0E0;">
+    
+  </div>
 `;
+
+
+
+
+
 
     const style = document.createElement("style");
     style.innerHTML = `
-  .floating-btn {
-    margin: 5px;
-    padding: 8px 14px;
-    background-color: #3498db;
-    color: white;
-    border: 1px solid #2980b9;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.2s ease;
-  }
-  .floating-btn:hover {
-    background-color: #2980b9;
-  }
-`;
+    .floating-btn {
+  margin: 5px;
+  padding: 8px 14px;
+  background-color: #3A82F7;
+  color: #FFFFFF;
+  border: 1px solid #1E40AF;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  flex-shrink: 0;
+}
+.floating-btn:hover {
+  background-color: #2563EB;
+}
+
+    `
+
+
+//     `
+//   .floating-btn {
+//     margin: 5px;
+//     padding: 8px 14px;
+//     background-color: #3A82F7;
+//     color: #FFFFFF;
+//     border: 1px solid #1E40AF;
+//     border-radius: 5px;
+//     cursor: pointer;
+//     transition: background 0.2s ease;
+//   }
+//   .floating-btn:hover {
+//     background-color: #2563EB;
+//   }
+// `;
     document.head.appendChild(style);
 
     document.body.appendChild(floatingWindow);
