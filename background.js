@@ -1,4 +1,4 @@
-import { sendTestcasePromptToGeminiAPI, sendAnalyzeCodeToGeminiAPI, sendApproachHintPromptToGeminiAPI, sendThinkTestcasesPromptToGeminiAPI } from './aiApi.js';
+import { sendTestcasePromptToGeminiAPI, sendAnalyzeCodeToGeminiAPI, sendApproachHintPromptToGeminiAPI, sendThinkTestcasesPromptToGeminiAPI, sendFullCodePromptToGeminiAPI } from './aiApi.js';
 
 
 
@@ -11,12 +11,30 @@ chrome.action.onClicked.addListener((tab) => {
       // Content script not injected
       console.log('Content script not found, injecting now.');
 
-      chrome.scripting.executeScript({
+
+      // Step 2: Inject Prism CSS
+      chrome.scripting.insertCSS({
         target: { tabId: tab.id },
-        files: ['content.js']
+        files: ['prism/prism.css']
       }, () => {
-        console.log('content.js injected.');
-        chrome.tabs.sendMessage(tab.id, { action: "toggleFloatingWindow" });
+        console.log('Prism CSS injected.');
+
+        // Step 3: Inject Prism JS
+        chrome.scripting.executeScript({
+          target: { tabId: tab.id },
+          files: ['prism/prism.js']
+        }, () => {
+          console.log('Prism JS injected.');
+
+          // Step 4: Inject your content.js
+          chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            files: ['content.js']
+          }, () => {
+            console.log('content.js injected.');
+            chrome.tabs.sendMessage(tab.id, { action: "toggleFloatingWindow" });
+          });
+        });
       });
 
     } else {
@@ -117,6 +135,24 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       catch(error){
         console.error("Error in generating approach hint:", error);
         sendResponse({thinkTestCases:"Error generating approach hint"});
+      }
+   })();
+    
+    return true; // IMPORTANT: allow async response
+  }
+
+  if(message.action === "fullCodeGenerate"){
+     const { content,lang, code } = message.payload;
+
+   ( async()=>{
+      try{
+        const fullCode = await sendFullCodePromptToGeminiAPI(content,lang,code);
+        console.log("Full Code: ",fullCode)
+        sendResponse({fullCode});
+      }
+      catch(error){
+        console.error("Error in generating full code :", error);
+        sendResponse({fullCode:"Error generating full code"});
       }
    })();
     

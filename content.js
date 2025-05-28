@@ -1,67 +1,67 @@
 // import {showToast} from './toastError.js';   not works ??
 
-function injectToastStyles() {
-  if (document.getElementById("custom-toast-style")) return; // avoid duplicates
+// function injectToastStyles() {
+//   if (document.getElementById("custom-toast-style")) return; // avoid duplicates
 
-  const style = document.createElement("style");
-  style.id = "custom-toast-style";
-  style.textContent = `
-    .toast-container {
-      position: fixed;
-      bottom: 30px;
-      right: 20px;
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+//   const style = document.createElement("style");
+//   style.id = "custom-toast-style";
+//   style.textContent = `
+//     .toast-container {
+//       position: fixed;
+//       bottom: 30px;
+//       right: 20px;
+//       z-index: 9999;
+//       display: flex;
+//       flex-direction: column;
+//       gap: 10px;
+//     }
 
-    .toast {
-      background: rgba(0, 0, 0, 0.85);
-      color: #fff;
-      padding: 10px 16px;
-      border-radius: 6px;
-      font-size: 14px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      animation: fadein 0.3s, fadeout 0.3s ease-out 2.7s;
-    }
+//     .toast {
+//       background: rgba(0, 0, 0, 0.85);
+//       color: #fff;
+//       padding: 10px 16px;
+//       border-radius: 6px;
+//       font-size: 14px;
+//       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+//       animation: fadein 0.3s, fadeout 0.3s ease-out 2.7s;
+//     }
 
-    @keyframes fadein {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+//     @keyframes fadein {
+//       from { opacity: 0; transform: translateY(20px); }
+//       to { opacity: 1; transform: translateY(0); }
+//     }
 
-    @keyframes fadeout {
-      from { opacity: 1; transform: translateY(0); }
-      to { opacity: 0; transform: translateY(20px); }
-    }
-  `;
-  document.head.appendChild(style);
-}
+//     @keyframes fadeout {
+//       from { opacity: 1; transform: translateY(0); }
+//       to { opacity: 0; transform: translateY(20px); }
+//     }
+//   `;
+//   document.head.appendChild(style);
+// }
 
-function showToast(message, duration = 3000) {
-  injectToastStyles();
+// function showToast(message, duration = 3000) {
+//   injectToastStyles();
 
-  let container = document.querySelector(".toast-container");
-  if (!container) {
-    container = document.createElement("div");
-    container.className = "toast-container";
-    document.body.appendChild(container);
-  }
+//   let container = document.querySelector(".toast-container");
+//   if (!container) {
+//     container = document.createElement("div");
+//     container.className = "toast-container";
+//     document.body.appendChild(container);
+//   }
 
-  const toast = document.createElement("div");
-  toast.className = "toast";
-  toast.innerText = message;
+//   const toast = document.createElement("div");
+//   toast.className = "toast";
+//   toast.innerText = message;
 
-  container.appendChild(toast);
+//   container.appendChild(toast);
 
-  setTimeout(() => {
-    toast.remove();
-    if (container.childElementCount === 0) {
-      container.remove();
-    }
-  }, duration);
-}
+//   setTimeout(() => {
+//     toast.remove();
+//     if (container.childElementCount === 0) {
+//       container.remove();
+//     }
+//   }, duration);
+// }
 
 const leetCodeData = {
   title: null,
@@ -70,12 +70,14 @@ const leetCodeData = {
   testcases: null,
   hints: null,
   thinkTestCases: null,
+  language:null,
 };
 
 console.log(
   "Extracting full LeetCode question content and code editor content..."
 );
 
+/*
 // Function to extract question title
 // function extractQuestionTitle() {
 
@@ -94,6 +96,9 @@ console.log(
 //   const descriptionDiv = document.querySelector('div[data-track-load="description_content"]');
 //   return descriptionDiv ? descriptionDiv.innerText.trim() : "Question content not found";
 // }
+*/
+
+
 
 // Function to extract question title and store it
 function extractQuestionTitle() {
@@ -133,8 +138,28 @@ function extractFullQuestionContent() {
   }
 }
 
-// Function to extract code editor content
+// funcion to extract language selected 
+function extractSelectedLanguage() {
+  try {
+    const editorContainer = document.querySelector('div#editor');
+    if (!editorContainer) throw new Error("Editor container not found");
 
+    const languageButton = editorContainer.querySelector('button[aria-haspopup="dialog"]');
+    if (!languageButton) throw new Error("Language selector button not found");
+
+    const language = languageButton.innerText.trim();
+    leetCodeData.language = language;
+    return language;
+  } catch (err) {
+    showToast("⚠️ Programming language not found.");
+    console.error("Error extracting language:", err.message);
+    leetCodeData.language = null;
+    return null;
+  }
+}
+
+
+// Function to extract code editor content
 function extractEditorContent() {
   // return promise
   return new Promise((resolve, reject) => {
@@ -180,6 +205,8 @@ function scrapeLeetCodeData() {
   leetCodeData.testcases = null; // <-- clear old code
   leetCodeData.hints = null; // <-- clear old code
   leetCodeData.thinkTestCases = null; // <-- clear old code
+  leetCodeData.language = null; // <-- clear old code
+  
 
   if (leetCodeData.title) {
     const outputHTML = `
@@ -342,7 +369,8 @@ async function analyzeCode() {
             const issueContent = document.createElement("div");
             issueContent.style.display = "none";
             issueContent.style.padding = "10px";
-            issueContent.style.backgroundColor = "#f9f9f9";
+            // issueContent.style.backgroundColor = "#f9f9f9";
+            issueContent.style.backgroundColor = "orange"
 
             // Issue Detail
             const detailPara = document.createElement("p");
@@ -583,34 +611,131 @@ function generateThinkTestCases() {
   );
 }
 
-// function generateFullCode(){
+async function generateFullCode(){
 
-//   const temp=document.createElement('div');
-//   temp.style.color="White";
-//   temp.style.marginLeft="10px";
 
-//   if (!leetCodeData.content) {
-//     alert( "Please scrape the question first!");
-//     return;
-//   }
+  if (!leetCodeData.content) {
+    alert("Please scrape the question first!");
+    return;
+  }
 
-//   const txt="Generating full code....."
-//   temp.textContent=txt;
-//   const output = document.getElementById('output');
+  const output = document.getElementById("output");
 
-//   output.appendChild(temp);
+  const codeDivContainer = output.getElementsByClassName(
+    "codeDiv"
+  )[0];
+  if (codeDivContainer) {
+    output.removeChild(codeDivContainer);
+  }
 
-//   chrome.runtime.sendMessage(
-//     {
-//       action: "generateFullCode",
-//       payload: {
-//         content: leetCodeData.content,
+  try{
+    const language=await extractSelectedLanguage();
+    leetCodeData.language=language;
+    const codeContent = await extractEditorContent();
+    leetCodeData.code = codeContent;
+  const temp = document.createElement("div");
+  temp.style.color = "White";
+  temp.style.marginLeft = "10px";
 
-//       }
-//     },
-//   )
+  const txt = "Generating whole code...";
+  temp.textContent = txt;
+  output.appendChild(temp);
 
-// }
+  chrome.runtime.sendMessage(
+    {
+      action:"fullCodeGenerate",
+      payload:{
+        content:leetCodeData.content,
+        lang:leetCodeData.language,
+        code:leetCodeData.code,
+      },
+    },
+    (response) =>{
+      output.removeChild(temp);
+      const { fullCode}= response || {};
+
+      if(fullCode){
+
+         const codeDiv = document.createElement('div');
+         codeDiv.className = 'codeDiv'; // Add this line when creating the new codeDiv
+
+
+    // Set the background color and styling for the code div
+    //codeDiv.style.backgroundColor = '#f4f4f4';  // Match the output container's background color
+    codeDiv.style.border = '1px solid #ccc';
+    codeDiv.style.borderRadius = '8px';
+    codeDiv.style.padding = '10px';  // Padding for readability
+    codeDiv.style.fontFamily = 'monospace';  // Monospace font for code
+    codeDiv.style.whiteSpace = 'pre-wrap';  // Preserve line breaks
+    codeDiv.style.overflowX = 'auto';  // Horizontal scrolling for overflowed code
+    codeDiv.style.maxWidth = '100%';  // Prevent div from going beyond container
+
+
+
+      // Add heading
+  const heading = document.createElement('h3');
+  heading.textContent = 'Code:';
+  heading.style.marginBottom = '15px';
+  heading.style.color = 'white';
+  heading.style.fontFamily = 'Arial, sans-serif';
+  codeDiv.appendChild(heading);
+
+
+   // Apply Prism.js syntax highlighting by wrapping code with a <pre> and <code> block
+    const codeBlock = document.createElement('pre');
+    const codeElement = document.createElement('code');
+    codeElement.className = 'language-java';  // Change language if needed
+    codeElement.textContent = fullCode;  // Set the code content
+    codeBlock.appendChild(codeElement);  // Append <code> inside <pre>
+    codeDiv.appendChild(codeBlock);  // Add <pre> block to the code div
+
+    // Apply Prism.js highlighting
+    Prism.highlightElement(codeElement);
+
+    // Create the Copy button
+    const copyButton = document.createElement('button');
+    copyButton.textContent = 'Copy';
+    copyButton.style.marginTop = '10px';  // Space between code and button
+    copyButton.style.padding = '10px 15px';
+    copyButton.style.border = 'none';
+    copyButton.style.backgroundColor = '#4CAF50';  // Green color for button
+    copyButton.style.color = 'white';
+    copyButton.style.borderRadius = '5px';
+    copyButton.style.cursor = 'pointer';
+    copyButton.style.fontSize = '14px';
+
+    // Add copy functionality to the button
+    copyButton.addEventListener('click', () => {
+        navigator.clipboard.writeText(fullCode).then(() => {
+            alert('Code copied to clipboard!');  // Show an alert once copied
+        }).catch((err) => {
+            console.error('Error copying code:', err);
+        });
+    });
+
+    // Append the copy button below the code
+    codeDiv.appendChild(copyButton);
+
+    // Append the codeDiv to the output container
+    output.appendChild(codeDiv);
+
+
+      }
+      else{
+        alert("Failed to generate full code");
+      }
+    }
+  );
+}
+catch(error){
+  document.getElementById("output").innerText =
+      "Error extracting code: " + error;
+}
+}
+
+
+
+
 
 (function () {
   let floatingWindow = null;
@@ -658,8 +783,9 @@ function generateThinkTestCases() {
     floatingWindow.style.maxHeight = "90vh";
 
     floatingWindow.innerHTML = `
+  <div id="staticContainer" style="position:static;">
   <div id="floatingHeader" style="cursor:move;padding:10px;background:#f0f0f0;border-bottom:1px solid #ccc;display:flex;justify-content:space-between;align-items:center; background-color:black;">
-    <h3 style="margin:0 ;color: white;">LeetGrow Panel</h3>
+    <p style="font-size: 20px; font-weight: bold; color: white; margin: 0;">LeetGrow</p>
     <button id="closeFloatingWindow" style="margin-left:auto;background:#e74c3c;color:white;border:none;padding:5px 10px;border-radius:4px;cursor:pointer;">X</button>
   </div>
   <div id="floatingContent" style="padding:2px; background-color:orange">
@@ -670,6 +796,7 @@ function generateThinkTestCases() {
     <button class="floating-btn" id="analyzeBtn">Analyze</button>
     <button class="floating-btn" id="completeCode">Full Code</button>
 
+  </div>
   </div>
   <div style="background-color:; padding:1px; margin-top:10px" id="output"  >
 

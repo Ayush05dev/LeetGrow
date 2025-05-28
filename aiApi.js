@@ -1,37 +1,83 @@
+
+ /*// export async function sendToGeminiAPI(prompt) {
+//   const apiKey = "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"
+//   // "AIzaSyBiPC08Y9E6V3nT4JHYkzvcU-dDLa44NrA";
+//   //  "AIzaSyC3gej8bMpUrfkl8Q640lWhY9MDFTFlprU";
+//   // "AIzaSyAAWU4uS4A-oab9F7n5V0dSdmHexCH3AVo"; // Replace with your real key
+//   const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${apiKey}`;
+
+//   try {
+//     const response = await fetch(apiUrl, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify({
+//         contents: [
+//           {
+//             parts: [{ text: prompt }],
+//           },
+//         ],
+//       }),
+//     });
+
+//     const data = await response.json();
+
+//     if (data.error) {
+//       console.error("Gemini API Error:", data.error);
+//       return "Gemini API error: " + data.error.message;
+//     }
+
+//     const aiAnswer = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+//     return aiAnswer;
+//   } catch (error) {
+//     console.error("Error calling Gemini API:", error);
+//     return "Error occurred!";
+//   }
+// }
+
+*/
+
+
+
 export async function sendToGeminiAPI(prompt) {
-  const apiKey = "AIzaSyC3gej8bMpUrfkl8Q640lWhY9MDFTFlprU";
-  // "AIzaSyAAWU4uS4A-oab9F7n5V0dSdmHexCH3AVo"; // Replace with your real key
-  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${apiKey}`;
+  const apiKey = "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"; 
+  const apiUrl = "https://openrouter.ai/api/v1/chat/completions";
 
   try {
     const response = await fetch(apiUrl, {
       method: "POST",
       headers: {
+        "Authorization": `Bearer ${apiKey}`,
         "Content-Type": "application/json",
+        "X-Title": "LeetGrow Title", // Optional title for usage tracking
       },
       body: JSON.stringify({
-        contents: [
+        model: "google/gemma-3n-e4b-it:free", // Or try "anthropic/claude-3-haiku"
+        messages: [
           {
-            parts: [{ text: prompt }],
-          },
-        ],
+            role: "user",
+            content: prompt
+          }
+        ]
       }),
     });
 
     const data = await response.json();
 
     if (data.error) {
-      console.error("Gemini API Error:", data.error);
-      return "Gemini API error: " + data.error.message;
+      console.error("OpenRouter API Error:", data.error);
+      return "OpenRouter API error: " + data.error.message;
     }
 
-    const aiAnswer = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+    const aiAnswer = data.choices?.[0]?.message?.content?.trim();
     return aiAnswer;
   } catch (error) {
-    console.error("Error calling Gemini API:", error);
+    console.error("Error calling OpenRouter API:", error);
     return "Error occurred!";
   }
 }
+
 
 export async function sendTestcasePromptToGeminiAPI(questionContent) {
   const prompt = `Given the following LeetCode problem description:
@@ -125,7 +171,7 @@ Return only the JSON, no markdown formatting, headers, or additional explanation
 export async function sendApproachHintPromptToGeminiAPI(content) {
   const prompt = `Given the following LeetCode problem description :
   ${content}
-  Your task is to generate hint of approaches to solve this question. Output the hints like the below example.
+  Your task is to generate 4 to 5 hints of approaches to solve this question. Output the hints like the below example.
   Example:
   "
   Hint 1: Try using a hashmap.
@@ -153,4 +199,15 @@ export async function sendThinkTestcasesPromptToGeminiAPI(content) {
   Only output the numbered thinking statements, without explanations or extra formatting.`;
 
   return sendToGeminiAPI(prompt);
+}
+
+export async function sendFullCodePromptToGeminiAPI(content, lang, code){
+
+const prompt =`Given the following LeetCode problem description :
+  ${content}
+  By deeply analyze your task is to generate full code in language :${lang} and use the format of class and function name which is same as leetcode format from this code  :${code} . Provide correct code, explanatory with comments. 
+  `
+
+  return sendToGeminiAPI(prompt);
+
 }
