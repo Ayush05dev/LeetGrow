@@ -55,7 +55,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
     (async () => {
       try {
-        const testCases = await sendTestcasePromptToGeminiAPI(content,givenTestcases); // you have to implement this
+         const testCases = await sendTestcasePromptToGeminiAPI(content,givenTestcases); 
+
+/*      
+// ------ For Testing Purpose ----------
 //         const testCases =`[[0,1],[0,2],[2,3],[2,4]]
 // [[0,1],[0,2],[0,3],[2,7],[1,4],[4,5],[4,6]]
 // 2
@@ -71,7 +74,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 // [1]
 // [0]
 // `;
-        console.log(testCases)
+*/
+      
+      console.log(testCases)
         sendResponse({ testCases });
       } catch (error) {
         console.error('Error generating testcases:', error);
@@ -88,8 +93,30 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
    ( async()=>{
       try{
-         const res = await sendAnalyzeCodeToGeminiAPI(content, code);
-         console.log("analysis:" ,res)
+          const res = await sendAnalyzeCodeToGeminiAPI(content, code);
+         /* const parsed =`Issue 1:
+background.js:106 Heading: Missing Tree Traversal
+background.js:107 Detail: The provided solution is incomplete. It doesn't implement the necessary logic to traverse the trees, calculate distances between nodes, and determine the number of targetable nodes for each node in the first tree. The problem requires finding nodes in the second tree within a certain distance 'k'.
+background.js:108 Solution: Implement a tree traversal algorithm (like DFS or BFS) for both trees. For each node in the first tree, iterate through the nodes in the second tree and calculate the distance between them. If the distance is less than or equal to 'k', increment the count of targetable nodes for the corresponding node in the first tree.
+background.js:105 Issue 2:
+background.js:106 Heading: No Distance Calculation
+background.js:107 Detail: The code lacks the crucial step of calculating the number of edges (distance) between nodes in the two trees.  The problem statement specifies \`k\` as the maximum number of edges allowed on the path between two nodes. This distance must be calculated for each possible pair of nodes across the trees.
+background.js:108 Solution: Implement a function to calculate the shortest path length (number of edges) between two nodes in the two trees.  This could involve BFS or DFS, tracking the number of edges traversed.
+background.js:105 Issue 3:
+background.js:106 Heading: Handling Tree Structure
+background.js:107 Detail: The solution doesn't consider the tree structure.  It simply iterates through nodes and checks for connectivity but doesn't leverage the fact that the input is a tree.  Ignoring the tree structure will lead to incorrect distance calculations.
+background.js:108 Solution: Use DFS or BFS to explore the tree structure.  This will allow accurate distance calculation between nodes within the trees. The tree structure matters for determining if a path exists and its length.
+background.js:105 Issue 4:
+background.js:106 Heading: Incorrect Initialization / Edge Case for k=0
+background.js:107 Detail: The code doesn't explicitly handle the edge case when \`k = 0\`. In this case, a node in the first tree can only be targeted by a node in the second tree if they are directly connected. Also, the initial counts for each node in the first tree are not set accurately.
+background.js:108 Solution: Initialize a \`target_count\` array of size \`n\` with zeros. Iterate through the edges of both trees. For each edge, if the distance between the connected nodes is less than or equal to \`k\`, increment the \`target_count\` of the corresponding nodes. Handle the case where k=0, where only directly connected nodes in the second tree will be targets.
+background.js:105 Issue 5:
+background.js:106 Heading: Missing Connection Logic
+background.js:107 Detail: The prompt asks to connect one node from the first tree to another in the second tree. The provided code doesn't implement this connection or consider different potential connections.  It implies a direct connection is always desired.
+background.js:108 Solution: Iterate through all pairs of nodes in the first tree and all pairs of nodes in the second tree. For each pair, check if the distance is <= k. If it is, increment the count for the corresponding node in the first tree. The number of potential connections will depend on the specific constraints implied by the problem.`
+*/
+      
+ console.log("analysis:" ,res)
         let rawResponse = res.trim();
 
       // Remove ```json and ``` if present
@@ -124,7 +151,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
    ( async()=>{
       try{
-        const approachHint = await sendApproachHintPromptToGeminiAPI(content);
+          const approachHint = await sendApproachHintPromptToGeminiAPI(content);
+/*
+//          const approachHint=`ApproachHint:  Here are 4 hints to approach the given LeetCode problem:
+
+// Hint 1: Consider the problem in terms of paths. For each node in the first tree, you need to find the number of nodes in the second tree that are within a distance of \`k\` from it.
+
+// Hint 2:  Think about how to efficiently find all nodes reachable within a certain distance in a tree. Breadth-First Search (BFS) is a suitable algorithm for this.
+
+// Hint 3: You'll need a way to represent the graph of the second tree and potentially precompute distances between nodes in it. A dictionary or adjacency list can be useful for representing the second tree.
+
+// Hint 4: The problem asks for the *maximum* number of target nodes for each node in the first tree after making one connection. This suggests you should iterate through the nodes of the first tree and, for each, consider connecting it to every node in the second tree and counting reachable nodes within \`k\` edges. Finally, find the maximum count among all such connections.`
+*/
         console.log("ApproachHint: ",approachHint)
         sendResponse({approachHint});
       }
@@ -143,7 +181,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
    ( async()=>{
       try{
-        const thinkTestCases = await sendThinkTestcasesPromptToGeminiAPI(content);
+         const thinkTestCases = await sendThinkTestcasesPromptToGeminiAPI(content);
+
+/*
+//         const thinkTestCases=`Think TestCases: 1: Both trees are empty (n=0, m=0). The output should be an empty array.
+// 2: The first tree has only one node, and the second tree has only one node. k is any non-negative integer. The output for both trees should be 1.
+// 3: The first tree has a star-shaped structure (one central node connected to all other nodes), and the second tree has a line structure (two nodes connected by one edge). k is a small value (e.g., 1). The output should reflect that the central node of the first tree can reach all nodes of the second tree within k edges.
+// 4: The first tree is a long chain of n nodes, and the second tree is a long chain of m nodes. k is a large value (e.g., 1000). The output should be n and m respectively, as any node in the first tree can reach any node in the second tree.
+// 5: The first tree and the second tree share some common nodes. The edge k is small enough that some nodes in one tree can reach some nodes in the other tree. The output should reflect the maximum number of reachable nodes for each node in the first tree.`
+*/
+
         console.log("Think TestCases:",thinkTestCases);
         sendResponse({thinkTestCases});
       }
@@ -161,8 +208,67 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
    ( async()=>{
       try{
-        const fullCode = await sendFullCodePromptToGeminiAPI(content,lang,code);
-        console.log("Full Code: ",fullCode)
+         const fullCode = await sendFullCodePromptToGeminiAPI(content,lang,code);
+        
+ /*       
+//          const fullCode=`
+// #include <iostream>
+// #include <vector>
+// #include <algorithm>
+
+// using namespace std;
+
+// class Solution {
+// public:
+//     vector<int> maxTargetNodes(vector<vector<int>>& edges1, vector<vector<int>>& edges2, int k) {
+//         int n = edges1.size() + 1;
+//         int m = edges2.size() + 1;
+//         vector<vector<int>> adj1(n);
+//         vector<vector<int>> adj2(m);
+//         for (auto& edge : edges1) {
+//             adj1[edge[0]].push_back(edge[1]);
+//             adj1[edge[1]].push_back(edge[0]);
+//         }
+//         for (auto& edge : edges2) {
+//             adj2[edge[0]].push_back(edge[1]);
+//             adj2[edge[1]].push_back(edge[0]);
+//         }
+
+//         vector<int> answer(n);
+//         for (int i = 0; i < n; ++i) {
+//             int max_target = 0;
+//             for (int j = 0; j < m; ++j) {
+//                 vector<bool> visited1(n, false);
+//                 vector<bool> visited2(m, false);
+//                 if (dfs(i, j, adj1, adj2, k, visited1, visited2)) {
+//                     max_target++;
+//                 }
+//             }
+//             answer[i] = max_target;
+//         }
+//         return answer;
+//     }
+
+// private:
+//     bool dfs(int u1, int u2, const vector<vector<int>>& adj1, const vector<vector<int>>& adj2, int k, vector<bool>& visited1, vector<bool>& visited2) {
+//         if (u1 == u2) {
+//             return true;
+//         }
+//         visited1[u1] = true;
+//         for (int v1 : adj1[u1]) {
+//             if (!visited1[v1]) {
+//                 if (dfs(v1, u2, adj1, adj2, k, visited1, visited2)) {
+//                     return true;
+//                 }
+//             }
+//         }
+//         return false;
+//     }
+// };
+
+// ` */
+       
+console.log("Full Code: ",fullCode)
         sendResponse({fullCode});
       }
       catch(error){
