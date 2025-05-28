@@ -71,6 +71,7 @@ const leetCodeData = {
   hints: null,
   thinkTestCases: null,
   language:null,
+  givenTestcases:null,
 };
 
 console.log(
@@ -159,6 +160,8 @@ function extractSelectedLanguage() {
 }
 
 
+
+
 // Function to extract code editor content
 function extractEditorContent() {
   // return promise
@@ -197,10 +200,66 @@ function extractEditorContent() {
   });
 }
 
+
+// function to extract given testcases
+// function extractGivenTestCases() {
+//   try {
+//     // Select the CodeMirror content editable container
+//     const testCaseEditor = document.querySelector('div.cm-content[contenteditable="true"]');
+//     if (!testCaseEditor) throw new Error("Test case editor not found");
+
+//     // Select all individual lines (div.cm-line)
+//     const lines = testCaseEditor.querySelectorAll('div.cm-line');
+//     if (!lines.length) throw new Error("No test case lines found");
+
+//     // Extract the text from each line and return as array or joined string
+//     const testCases = Array.from(lines).map(line => line.innerText.trim());
+
+//     // // Optional: Store or return
+//      console.log("Extracted test cases:", testCases);
+//     leetCodeData.givenTestcases=testCases;
+//     return testCases;
+
+//   } catch (err) {
+//     showToast("⚠️ Could not extract test cases.");
+//     console.error("Error extracting test cases:", err.message);
+//     return null;
+//   }
+// }
+
+function extractGivenTestCases() {
+  try {
+    // Select the CodeMirror content editable container
+    const testCaseEditor = document.querySelector('div.cm-content[contenteditable="true"]');
+    if (!testCaseEditor) throw new Error("Test case editor not found");
+
+    // Select all individual lines (div.cm-line)
+    const lines = testCaseEditor.querySelectorAll('div.cm-line');
+    if (!lines.length) throw new Error("No test case lines found");
+
+    // Join all lines with \n to match LeetCode's multi-line input format
+    const testCases = Array.from(lines).map(line => line.innerText.trim()).join('\n');
+
+    // Log and store for future prompt construction
+    console.log("Extracted test cases string:\n", testCases);
+    leetCodeData.givenTestcases = testCases;
+
+    return testCases;
+
+  } catch (err) {
+    showToast("⚠️ Could not extract test cases.");
+    console.error("Error extracting test cases:", err.message);
+    return null;
+  }
+}
+
+
+
 // function to call all scrape leetcode data
 function scrapeLeetCodeData() {
   extractQuestionTitle();
   extractFullQuestionContent();
+  extractGivenTestCases();
   leetCodeData.code = null; // <-- clear old code
   leetCodeData.testcases = null; // <-- clear old code
   leetCodeData.hints = null; // <-- clear old code
@@ -320,6 +379,7 @@ function generateTestCases() {
       action: "generateTestCases",
       payload: {
         content: leetCodeData.content,
+        givenTestcases:leetCodeData.givenTestcases,
       },
     },
     (response) => {

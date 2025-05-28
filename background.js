@@ -51,11 +51,26 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log('Background received message:', message);
 
   if (message.action === "generateTestCases") {
-    const { content } = message.payload;
+    const { content, givenTestcases } = message.payload;
 
     (async () => {
       try {
-        const testCases = await sendTestcasePromptToGeminiAPI(content); // you have to implement this
+        const testCases = await sendTestcasePromptToGeminiAPI(content,givenTestcases); // you have to implement this
+//         const testCases =`[[0,1],[0,2],[2,3],[2,4]]
+// [[0,1],[0,2],[0,3],[2,7],[1,4],[4,5],[4,6]]
+// 2
+// [[0,1],[0,2],[0,3],[0,4]]
+// [[0,1],[1,2],[2,3]]
+// 1
+// [1,9]
+// [9]
+// 1
+// 0
+// [5,0,0]
+// [0,0,5]
+// [1]
+// [0]
+// `;
         console.log(testCases)
         sendResponse({ testCases });
       } catch (error) {

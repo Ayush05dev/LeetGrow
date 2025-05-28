@@ -79,8 +79,8 @@ export async function sendToGeminiAPI(prompt) {
 }
 
 
-export async function sendTestcasePromptToGeminiAPI(questionContent) {
-  // const prompt = `Given the following LeetCode problem description:
+export async function sendTestcasePromptToGeminiAPI(questionContent,givenTestcases) {
+ /* // const prompt = `Given the following LeetCode problem description:
   // ${questionContent}
   
   // Your task is to deeply analyze the problem and generate **eight test cases** that cover all edge cases and verify the correctness of the solution.
@@ -114,8 +114,9 @@ export async function sendTestcasePromptToGeminiAPI(questionContent) {
   // Only follow this exact output style with no additional explanation or formatting.`;
 
   // your existing function that calls Gemini API
+  */
  
-  const prompt = `You are given a LeetCode-style problem:
+  /*const prompt = `You are given a LeetCode-style problem:
   
 ${questionContent}
 
@@ -182,9 +183,113 @@ Example 2 (2 test cases):
 - Use **exact array syntax** like \`[1,2,3]\` and numbers like \`5\`.
 
 Now, using this format and the given problem, generate 8 test case inputs.
-`;
+`;*/
 
  
+ /* const prompt = `You are given a LeetCode-style problem.
+
+📘 Problem Description:
+${questionContent}
+
+---
+
+🔎 Test Case Format Context:
+The examples given in the above problem description include test case **input formats**. Below is the **actual format** used in those examples:
+
+${givenTestcases}
+
+Use the **structure, style, and input ordering** of the examples above as a reference. You must analyze and follow this exact formatting when creating new test cases.
+
+---
+
+🎯 Your Task:
+Generate exactly **eight (8)** new test case inputs that:
+- Fully test the problem across all edge cases and conditions.
+- Strictly follow the **exact same input structure and order** as shown in the examples.
+- Help validate the correctness and robustness of any solution.
+
+---
+
+⚠️ Output Rules – Follow These STRICTLY:
+
+✅ Output:
+- Only raw test **input values**, one **value per line**.
+- Respect the **same input order** as in the given examples.
+- Use standard JSON-like syntax: arrays as \`[1,2,3]\`, numbers as \`5\`, strings as \`"abc"\` (only if shown in examples).
+
+⛔ DO NOT:
+- Add labels like "Input:" or "Example:"
+- Include any extra explanation or text.
+- Put multiple values on a single line.
+- Add quotes unless they appear in the given examples.
+
+---
+
+✅ Example (format derived from given examples):
+
+If the given examples above look like:
+\`\`\`
+[1,2,3]
+5
+[4,5,6]
+2
+\`\`\`
+
+Then your generated test cases must follow this same structure exactly.
+
+---
+
+Now, based on the problem and using the example format above as a template, generate **eight complete test case inputs**.
+`;
+*/
+
+console.log("Given TestCases Format :", givenTestcases);
+  const prompt = `You are given a LeetCode-style problem:
+
+${questionContent}
+
+The original problem statement shows sample test cases and below i am providing how they actually looks in the format so with this similar format generate more(8) testcases. (each input element on its own line, with no commas separating test cases):
+
+\`\`\`
+${givenTestcases}
+\`\`\`
+
+⚠️ Notice:
+- For ech input inside a single tetscases there should be different line for different variables to be input like if there is one 2d array and 2 1d array then there should be 3 lines one line for input of 2d array then no comma direct next line then input fist 1d array then in next line another 1d array and like that.
+- Lets take another exmaple in which two integer variables input and one 2d array then in that case according to question which one comes first array or integer variable take input of that and then in next line (no comma in previous line ) take remain array of variable input and then similarly in next line remainig variable or array input.
+- **Each array or number is on its own line.**  
+- **There are NO commas between separate test cases.**  
+- Once one test case finishes (after its last line), the very next line begins the next test case.
+
+---
+
+🎯 Your task:
+Generate **exactly eight (8)** new test case **inputs** that:
+1. Cover **all** edge cases and typical scenarios.
+2. Follow **exactly** the same **line-by-line** structure as above.
+3. Do **NOT** include any labels, commas, or extra formatting—just raw arrays/numbers, one per line.
+
+---
+
+✅ Example (from above):
+\`\`\`
+[1,2,2,1]
+[2,2]
+3
+6
+[4,9,5]
+[9,4,9,8,4]
+5
+8
+\`\`\`
+Here there are **two** complete test cases (4 lines each), back-to-back.
+
+---
+
+Now, based on the problem and using that exact format, output **8** test cases (each test case’s values on separate lines, and no commas between test‐cases).`;
+
+
+
   return sendToGeminiAPI(prompt);
 }
 
