@@ -38,10 +38,10 @@
 
 */
 
-
+import {API_KEY} from './config.js'
 
 export async function sendToGeminiAPI(prompt) {
-  const apiKey = "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"; 
+  const apiKey = API_KEY; 
   const apiUrl = "https://openrouter.ai/api/v1/chat/completions";
 
   try {

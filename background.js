@@ -2,6 +2,30 @@ import { sendTestcasePromptToGeminiAPI, sendAnalyzeCodeToGeminiAPI, sendApproach
 
 
 
+// Enable or disable extension icon based on tab URL
+chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+  if (changeInfo.status === "complete" && tab.url) {
+    if (tab.url.startsWith("https://leetcode.com/problems/")) {
+      await chrome.action.enable(tabId);
+      await chrome.action.setIcon({
+        tabId,
+        path: "icon2.png"
+      });
+    } else {
+      await chrome.action.disable(tabId);
+      await chrome.action.setIcon({
+        tabId,
+       path: "disable_icon2.png"  // simpler form
+
+      });
+    }
+  }
+});
+
+
+
+
+
 chrome.action.onClicked.addListener((tab) => {
   console.log('Extension icon clicked!');
 

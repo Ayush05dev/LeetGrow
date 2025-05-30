@@ -3,7 +3,7 @@
     "name": "LeetGrow",
     "version": "1.0",
     "description": "Generate Test Cases for LeetCode Problems and Analyze user's code to detect potential bugs.",
-    "permissions": ["activeTab", "scripting"],
+    "permissions": ["activeTab", "scripting","tabs"],
     "host_permissions": ["https://leetcode.com/problems/*"],
     "background": {
       "service_worker": "background.js",
