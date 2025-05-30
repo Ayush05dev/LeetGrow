@@ -10,14 +10,25 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
       await chrome.action.setIcon({
         tabId,
         path: "icon2.png"
-      });
+      }).catch(err => {
+  console.error("Failed to set icon:", err);
+});
     } else {
       await chrome.action.disable(tabId);
       await chrome.action.setIcon({
         tabId,
-       path: "disable_icon2.png"  // simpler form
+       path: "disable_icon2.png"  //rember to keep image size in one of these - 16x16 / 48x48 / 128x128 size	These are the supported sizes and must not be jpg
 
+      }).catch(err => {
+      console.error("Failed to set icon:", err);
       });
+
+      // 🔁 Set custom tooltip for unsupported pages
+      await chrome.action.setTitle({
+        tabId,
+        title: "Does not work on this site"
+      });
+
     }
   }
 });
