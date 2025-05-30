@@ -1,4 +1,4 @@
-import { sendTestcasePromptToGeminiAPI, sendAnalyzeCodeToGeminiAPI, sendApproachHintPromptToGeminiAPI, sendThinkTestcasesPromptToGeminiAPI, sendFullCodePromptToGeminiAPI } from './aiApi.js';
+import { sendTestcasePromptToGeminiAPI, sendAnalyzeCodeToGeminiAPI, sendApproachHintPromptToGeminiAPI, sendThinkTestcasesPromptToGeminiAPI, sendFullCodePromptToGeminiAPI } from './services/aiApi.js';
 
 
 
@@ -9,7 +9,7 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
       await chrome.action.enable(tabId);
       await chrome.action.setIcon({
         tabId,
-        path: "icon2.png"
+        path: "icons/icon2.png"
       }).catch(err => {
   console.error("Failed to set icon:", err);
 });
@@ -17,7 +17,7 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
       await chrome.action.disable(tabId);
       await chrome.action.setIcon({
         tabId,
-       path: "disable_icon2.png"  //rember to keep image size in one of these - 16x16 / 48x48 / 128x128 size	These are the supported sizes and must not be jpg
+       path: "icons/disable_icon2.png"  //rember to keep image size in one of these - 16x16 / 48x48 / 128x128 size	These are the supported sizes and must not be jpg
 
       }).catch(err => {
       console.error("Failed to set icon:", err);

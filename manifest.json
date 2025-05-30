@@ -10,11 +10,7 @@
       "type":"module"
     },
     "action": {
-      "default_icon": {
-        "16": "icon2.png",
-        "48": "icon2.png",
-        "128": "icon2.png"
-      }
+      "default_icon": "icons/icon2.png"
     }
     
   }
