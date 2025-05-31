@@ -57,8 +57,6 @@ Each button in LeetGrow helps you break down the problem-solving process. Here's
 
 ## 📸 Screenshots
 
-*(Add a few screenshots here: the popup, floating window, and AI responses)*  
-*(You can host them on GitHub or use a service like imgbb or PostImages)*
 
 ![image](https://github.com/user-attachments/assets/bf6bbea4-94c1-4c22-8c27-6153f66ca068)
 
