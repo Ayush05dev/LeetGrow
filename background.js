@@ -35,39 +35,59 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 
 
 
-
-
 chrome.action.onClicked.addListener((tab) => {
   console.log('Extension icon clicked!');
 
   // Step 1: Ping content script to check if already injected
   chrome.tabs.sendMessage(tab.id, { ping: true }, (response) => {
     if (chrome.runtime.lastError || !response) {
-      // Content script not injected
       console.log('Content script not found, injecting now.');
 
-
-      // Step 2: Inject Prism CSS
+      // Step 2: Inject Toastify CSS
       chrome.scripting.insertCSS({
         target: { tabId: tab.id },
-        files: ['prism/prism.css']
+        files: ['toastify/toastify.min.css']
       }, () => {
-        console.log('Prism CSS injected.');
+        console.log('Toastify CSS injected.');
 
-        // Step 3: Inject Prism JS
+        // Step 3: Inject Toastify JS
         chrome.scripting.executeScript({
           target: { tabId: tab.id },
-          files: ['prism/prism.js']
+          files: ['toastify/toastify.min.js']
         }, () => {
-          console.log('Prism JS injected.');
+          console.log('Toastify JS injected.');
 
-          // Step 4: Inject your content.js
+          // 👉 Step 4: Inject toastify-error.js 
           chrome.scripting.executeScript({
             target: { tabId: tab.id },
-            files: ['content.js']
+            files: ['services/toastify-error.js']
           }, () => {
-            console.log('content.js injected.');
-            chrome.tabs.sendMessage(tab.id, { action: "toggleFloatingWindow" });
+            console.log('toastify-error.js injected.');
+
+            // ✅ Step 5: Inject Prism CSS
+            chrome.scripting.insertCSS({
+              target: { tabId: tab.id },
+              files: ['prism/prism.css']
+            }, () => {
+              console.log('Prism CSS injected.');
+
+              // ✅ Step 6: Inject Prism JS
+              chrome.scripting.executeScript({
+                target: { tabId: tab.id },
+                files: ['prism/prism.js']
+              }, () => {
+                console.log('Prism JS injected.');
+
+                // ✅ Step 7: Inject your main content script
+                chrome.scripting.executeScript({
+                  target: { tabId: tab.id },
+                  files: ['content.js']
+                }, () => {
+                  console.log('content.js injected.');
+                  chrome.tabs.sendMessage(tab.id, { action: "toggleFloatingWindow" });
+                });
+              });
+            });
           });
         });
       });
@@ -187,17 +207,6 @@ background.js:108 Solution: Iterate through all pairs of nodes in the first tree
    ( async()=>{
       try{
           const approachHint = await sendApproachHintPromptToGeminiAPI(content);
-/*
-//          const approachHint=`ApproachHint:  Here are 4 hints to approach the given LeetCode problem:
-
-// Hint 1: Consider the problem in terms of paths. For each node in the first tree, you need to find the number of nodes in the second tree that are within a distance of \`k\` from it.
-
-// Hint 2:  Think about how to efficiently find all nodes reachable within a certain distance in a tree. Breadth-First Search (BFS) is a suitable algorithm for this.
-
-// Hint 3: You'll need a way to represent the graph of the second tree and potentially precompute distances between nodes in it. A dictionary or adjacency list can be useful for representing the second tree.
-
-// Hint 4: The problem asks for the *maximum* number of target nodes for each node in the first tree after making one connection. This suggests you should iterate through the nodes of the first tree and, for each, consider connecting it to every node in the second tree and counting reachable nodes within \`k\` edges. Finally, find the maximum count among all such connections.`
-*/
         console.log("ApproachHint: ",approachHint)
         sendResponse({approachHint});
       }
@@ -245,64 +254,7 @@ background.js:108 Solution: Iterate through all pairs of nodes in the first tree
       try{
          const fullCode = await sendFullCodePromptToGeminiAPI(content,lang,code);
         
- /*       
-//          const fullCode=`
-// #include <iostream>
-// #include <vector>
-// #include <algorithm>
-
-// using namespace std;
-
-// class Solution {
-// public:
-//     vector<int> maxTargetNodes(vector<vector<int>>& edges1, vector<vector<int>>& edges2, int k) {
-//         int n = edges1.size() + 1;
-//         int m = edges2.size() + 1;
-//         vector<vector<int>> adj1(n);
-//         vector<vector<int>> adj2(m);
-//         for (auto& edge : edges1) {
-//             adj1[edge[0]].push_back(edge[1]);
-//             adj1[edge[1]].push_back(edge[0]);
-//         }
-//         for (auto& edge : edges2) {
-//             adj2[edge[0]].push_back(edge[1]);
-//             adj2[edge[1]].push_back(edge[0]);
-//         }
-
-//         vector<int> answer(n);
-//         for (int i = 0; i < n; ++i) {
-//             int max_target = 0;
-//             for (int j = 0; j < m; ++j) {
-//                 vector<bool> visited1(n, false);
-//                 vector<bool> visited2(m, false);
-//                 if (dfs(i, j, adj1, adj2, k, visited1, visited2)) {
-//                     max_target++;
-//                 }
-//             }
-//             answer[i] = max_target;
-//         }
-//         return answer;
-//     }
-
-// private:
-//     bool dfs(int u1, int u2, const vector<vector<int>>& adj1, const vector<vector<int>>& adj2, int k, vector<bool>& visited1, vector<bool>& visited2) {
-//         if (u1 == u2) {
-//             return true;
-//         }
-//         visited1[u1] = true;
-//         for (int v1 : adj1[u1]) {
-//             if (!visited1[v1]) {
-//                 if (dfs(v1, u2, adj1, adj2, k, visited1, visited2)) {
-//                     return true;
-//                 }
-//             }
-//         }
-//         return false;
-//     }
-// };
-
-// ` */
-       
+ 
 console.log("Full Code: ",fullCode)
         sendResponse({fullCode});
       }

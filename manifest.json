@@ -1,20 +1,42 @@
 {
-    "manifest_version": 3,
-    "name": "LeetGrow",
-    "version": "1.0",
-    "description": "Generate Test Cases for LeetCode Problems and Analyze user's code to detect potential bugs.",
-    "permissions": ["activeTab", "scripting","tabs"],
-    "host_permissions": ["https://leetcode.com/problems/*"],
-    "background": {
-      "service_worker": "background.js",
-      "type":"module"
+  "manifest_version": 3,
+  "name": "LeetGrow",
+  "version": "1.0",
+  "description": "Generate Test Cases for LeetCode Problems and Analyze user's code to detect potential bugs.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://leetcode.com/problems/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_icon": {
+      "16": "icons/icon2.png",
+      "48": "icons/icon2.png",
+      "128": "icons/icon2.png"
     },
-    "action": {
-      "default_icon": "icons/icon2.png"
+    "default_title": "LeetGrow"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "toastify/toastify.min.js",
+      "toastify/toastify.min.css",
+      "services/toastify-error.js",
+      "prism/prism.js",
+      "prism/prism.css",
+      "content.js",
+      "toastify/toast-show.js",
+        "icons/icon2.png",
+        "icons/disable_icon2.png"
+      ],
+      "matches": ["<all_urls>"]
     }
-    
-  }
-
-
-
-  
+  ]
+}
