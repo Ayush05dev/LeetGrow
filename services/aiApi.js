@@ -53,7 +53,7 @@ export async function sendToGeminiAPI(prompt) {
         "X-Title": "LeetGrow Title", // Optional title for usage tracking
       },
       body: JSON.stringify({
-        model: "google/gemma-3n-e4b-it:free", // Or try "anthropic/claude-3-haiku"
+        model: "google/gemma-3n-e4b-it:free",
         messages: [
           {
             role: "user",

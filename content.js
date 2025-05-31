@@ -1,3 +1,8 @@
+const toastShowScript = document.createElement('script');
+toastShowScript.src = chrome.runtime.getURL('toastify/toast-show.js');
+document.body.appendChild(toastShowScript);
+
+
 const leetCodeData = {
   title: null,
   content: null,
@@ -27,7 +32,7 @@ function extractQuestionTitle() {
     leetCodeData.title = title;
     return title;
   } catch (err) {
-    // showToast("⚠️ Title not found.");
+    showErrorToast("Error extracting title");
     console.error("Error extracting title:", err.message);
     leetCodeData.title = null; // or fallback string like "Title not found"
     return null;
@@ -46,6 +51,7 @@ function extractFullQuestionContent() {
     leetCodeData.content = content;
     return content;
   } catch (err) {
+    showErrorToast("Error extracting content");
     console.error("Error extracting content:", err.message);
     leetCodeData.content = null; // or "Content not found"
     return null;
@@ -65,7 +71,7 @@ function extractSelectedLanguage() {
     leetCodeData.language = language;
     return language;
   } catch (err) {
-    // showToast("⚠️ Programming language not found.");
+    showErrorToast("Error extracting language");
     console.error("Error extracting language:", err.message);
     leetCodeData.language = null;
     return null;
@@ -77,42 +83,53 @@ function extractSelectedLanguage() {
 
 // Function to extract code editor content
 function extractEditorContent() {
-
-  // return promise
   return new Promise((resolve, reject) => {
     let editorArea = document.querySelector(".monaco-editor");
+    let settled=false;
 
     const checkExist = setInterval(() => {
-      editorArea = document.querySelector(".monaco-editor");
+      try {
+        editorArea = document.querySelector(".monaco-editor");
 
-      if (editorArea) {
-        // Found the editor
-        editorArea.click(); // Focus it
+        if (editorArea) {
+          editorArea.click(); // Focus it
 
-        const lineElements = document.querySelectorAll(
-          ".view-lines .view-line"
-        );
-
-        if (lineElements.length > 0) {
-          clearInterval(checkExist);
-
-          const codeLines = Array.from(lineElements).map(
-            (line) => line.innerText
+          const lineElements = document.querySelectorAll(
+            ".view-lines .view-line"
           );
-          const fullCode = codeLines.join("\n");
 
-          resolve(fullCode.trim());
+          if (lineElements.length > 0) {
+            clearInterval(checkExist);
+            settled =true;
+
+            const codeLines = Array.from(lineElements).map((line) => {
+              if (!line.innerText) throw new Error("Empty line element");
+              return line.innerText;
+            });
+
+            const fullCode = codeLines.join("\n");
+            resolve(fullCode.trim());
+          }
         }
+      } catch (error) {
+        clearInterval(checkExist);
+        reject(`Error extracting editor content: ${error.message}`);
+        showErrorToast("Error extracting editor content");
       }
-    }, 100); // Check every 100ms
+    }, 100);
 
-    // Timeout after 5 seconds if editor never appears
+    // Timeout after 3 seconds
     setTimeout(() => {
+      if(!settled){
       clearInterval(checkExist);
+      settled=true;
       reject("Editor not found or code content not loaded in time!");
-    }, 5000); // 5 seconds
+      showErrorToast("Editor not found or code content not loaded in time!")
+      }
+    }, 3000);
   });
 }
+
 
 
 
@@ -137,7 +154,7 @@ function extractGivenTestCases() {
     return testCases;
 
   } catch (err) {
-    // showToast("⚠️ Could not extract test cases.");
+    showErrorToast("Error extracting test cases");
     console.error("Error extracting test cases:", err.message);
     return null;
   }
@@ -177,12 +194,12 @@ function generateTestCases() {
   temp.style.marginLeft = "10px";
 
   if (!leetCodeData.content) {
-    alert("Please scrape the question first!");
+    showErrorToast("Please fetch the question first!");
     return;
   }
 
   if (leetCodeData.testcases) {
-    alert("Testcases already generated");
+    showErrorToast("Testcases already generated");
     return;
   }
 
@@ -248,7 +265,7 @@ function generateTestCases() {
 
         leetCodeData.testcases = testCases;
       } else {
-        alert("Failed to generate testcases.");
+        showErrorToast("Failed to generate testcases.");
       }
     }
   );
@@ -261,7 +278,7 @@ async function analyzeCode() {
   temp.style.marginLeft = "10px";
 
   if (!leetCodeData.content) {
-    alert("Please scrape the question first!");
+    showErrorToast("Please fetch the question first!");
     return;
   }
 
@@ -289,11 +306,11 @@ async function analyzeCode() {
         const { parsed } = response || {};
 
         if (!parsed) {
-          alert("Failed to analyze code.");
+          showErrorToast("Failed to analyze code.");
           return;
         }
 
-        // ✨ Container
+        // Container
         const container = document.createElement("div");
         container.className = "analyzeCodeContainer";
         container.style.backgroundColor = "#1E1E2F";
@@ -303,7 +320,7 @@ async function analyzeCode() {
         container.style.borderRadius = "12px";
         container.style.boxShadow = "0 4px 15px rgba(0,0,0,0.2)";
 
-        // 🏷️ Heading
+        //  Heading
         const heading = document.createElement("h3");
         heading.textContent = "Issues & Solutions";
         heading.style.color = "#3A82F7";
@@ -314,7 +331,7 @@ async function analyzeCode() {
         container.appendChild(heading);
 
         parsed.forEach((issue, idx) => {
-          // 🔹 Issue Card
+          // Issue Card
           const card = document.createElement("div");
           card.style.marginBottom = "16px";
           card.style.borderRadius = "8px";
@@ -322,7 +339,7 @@ async function analyzeCode() {
           card.style.border = "1px solid rgba(58,130,247,0.2)";
           card.style.backgroundColor = "#2C2C3E";
 
-          // ⚠️ Issue Header
+          //  Issue Header
           const issueHeader = document.createElement("button");
           issueHeader.textContent = `Issue ${idx + 1}: ${issue.issueHeading}`;
           issueHeader.style.width = "100%";
@@ -343,7 +360,7 @@ async function analyzeCode() {
             issueHeader.style.backgroundColor = "#3A82F7";
           });
 
-          // 📋 Issue Content
+          //  Issue Content
           const issueContent = document.createElement("div");
           issueContent.style.maxHeight = "0";
           issueContent.style.overflow = "hidden";
@@ -359,7 +376,7 @@ async function analyzeCode() {
           detail.style.lineHeight = "1.6";
           issueContent.appendChild(detail);
 
-          // 🔧 Solution Accordion
+          //  Solution Accordion
           const solHeader = document.createElement("button");
           solHeader.textContent = "Show Solution";
           solHeader.style.width = "100%";
@@ -389,48 +406,33 @@ async function analyzeCode() {
           solContent.style.marginBottom = "12px";
           solContent.style.transition = "max-height 0.3s ease, padding 0.3s ease";
 
-          // // Toggle logic
-          // issueHeader.addEventListener("click", () => {
-          //   const open = issueContent.style.maxHeight !== "0px";
-          //   issueContent.style.padding = open ? "0 16px" : "16px";
-          //   issueContent.style.maxHeight = open ? "0" : "500px";
-          // });
-
-          // solHeader.addEventListener("click", () => {
-          //   const open = solContent.style.maxHeight !== "0px";
-          //   solContent.style.padding = open ? "0 16px" : "12px 16px";
-          //   solContent.style.maxHeight = open ? "0" : "300px";
-          // });
-
-
-
           // Toggle logic for the main issue content
-issueHeader.addEventListener("click", () => {
-  const open = issueContent.style.maxHeight !== "0px";
-  if (open) {
-    issueContent.style.padding = "0 16px";
-    issueContent.style.maxHeight = "0";
-    issueContent.style.overflowY = "hidden";
-  } else {
-    issueContent.style.padding = "16px";
-    issueContent.style.maxHeight = "500px";        // same as before
-    issueContent.style.overflowY = "auto";         // allow scroll
-  }
-});
+        issueHeader.addEventListener("click", () => {
+          const open = issueContent.style.maxHeight !== "0px";
+          if (open) {
+            issueContent.style.padding = "0 16px";
+            issueContent.style.maxHeight = "0";
+            issueContent.style.overflowY = "hidden";
+          } else {
+            issueContent.style.padding = "16px";
+            issueContent.style.maxHeight = "500px";        // same as before
+            issueContent.style.overflowY = "auto";         // allow scroll
+          }
+        });
 
-// Toggle logic for the solution content
-solHeader.addEventListener("click", () => {
-  const open = solContent.style.maxHeight !== "0px";
-  if (open) {
-    solContent.style.padding = "0 16px";
-    solContent.style.maxHeight = "0";
-    solContent.style.overflowY = "hidden";
-  } else {
-    solContent.style.padding = "12px 16px";
-    solContent.style.maxHeight = "300px";         // same as before
-    solContent.style.overflowY = "auto";           // allow scroll
-  }
-});
+        // Toggle logic for the solution content
+        solHeader.addEventListener("click", () => {
+          const open = solContent.style.maxHeight !== "0px";
+          if (open) {
+            solContent.style.padding = "0 16px";
+            solContent.style.maxHeight = "0";
+            solContent.style.overflowY = "hidden";
+          } else {
+            solContent.style.padding = "12px 16px";
+            solContent.style.maxHeight = "300px";         // same as before
+            solContent.style.overflowY = "auto";           // allow scroll
+          }
+        });
 
 
           // Assemble
@@ -445,12 +447,9 @@ solHeader.addEventListener("click", () => {
       }
     );
   } catch (err) {
-    document.getElementById("output").innerText =
-      "Error extracting code: " + err;
+    showErrorToast("Error extracting code");
   }
 }
-
-
 
 
 function approachHintGeneration() {
@@ -459,12 +458,12 @@ function approachHintGeneration() {
   temp.style.marginLeft = "10px";
 
   if (!leetCodeData.content) {
-    alert("Please scrape the question first!");
+    showErrorToast("Please fetch the question first!");
     return;
   }
 
   if (leetCodeData.hints) {
-    alert("Hints already generated");
+    showErrorToast("Hints already generated");
     return;
   }
 
@@ -577,7 +576,7 @@ function approachHintGeneration() {
         output.appendChild(approachHintContainer);
         leetCodeData.hints = approachHint;
       } else {
-        alert("Failed to generate approach hints.");
+        showErrorToast("Failed to generate approach hints.");
       }
     }
   );
@@ -590,11 +589,11 @@ function generateThinkTestCases() {
   temp.style.marginLeft = "10px";
 
   if (!leetCodeData.content) {
-    alert("Please scrape the question first!");
+    showErrorToast("Please fetch the question first!");
     return;
   }
   if (leetCodeData.thinkTestCases) {
-    alert("Think testcases already generated");
+    showErrorToast("Think testcases already generated");
     return;
   }
 
@@ -615,7 +614,7 @@ function generateThinkTestCases() {
       output.removeChild(temp);
 
       if (thinkTestCases) {
-        // 🌙 Modern Container
+        // Modern Container
         const thinkTestCaseContainer = document.createElement("div");
         thinkTestCaseContainer.style.padding = "16px";
         thinkTestCaseContainer.style.marginTop = "20px";
@@ -623,7 +622,7 @@ function generateThinkTestCases() {
         thinkTestCaseContainer.style.backgroundColor = "#1E1E2F";  // Dark theme card
         thinkTestCaseContainer.style.boxShadow = "0 4px 10px rgba(0,0,0,0.2)";
 
-        // 🏷️ Title
+        // Title
         const heading = document.createElement("h3");
         heading.textContent = "Think Test Cases";
         heading.style.marginBottom = "15px";
@@ -633,7 +632,7 @@ function generateThinkTestCases() {
         heading.style.fontWeight = "600";
         thinkTestCaseContainer.appendChild(heading);
 
-        // 📋 Each Test Case Box
+        // Each Test Case Box
         const cases = thinkTestCases.trim().split("\n");
         cases.forEach((testCase) => {
           const testCaseDiv = document.createElement("div");
@@ -664,7 +663,7 @@ function generateThinkTestCases() {
         output.appendChild(thinkTestCaseContainer);
         leetCodeData.thinkTestCases = thinkTestCases;
       } else {
-        alert("Failed to generate think testcases.");
+        showErrorToast("Failed to generate think testcases.");
       }
     }
   );
@@ -673,7 +672,7 @@ function generateThinkTestCases() {
 
 async function generateFullCode() {
   if (!leetCodeData.content) {
-    alert("Please scrape the question first!");
+    showErrorToast("Please fetch the question first!");
     return;
   }
 
@@ -712,7 +711,7 @@ async function generateFullCode() {
         const { fullCode } = response || {};
 
         if (fullCode) {
-          // 🧱 Modern Code Container
+          // Modern Code Container
           const codeDiv = document.createElement("div");
           codeDiv.className = "codeDiv";
           codeDiv.style.backgroundColor = "#1E1E2F";  // Dark theme
@@ -724,7 +723,7 @@ async function generateFullCode() {
           codeDiv.style.maxWidth = "100%";
           codeDiv.style.overflowX = "auto";
 
-          // 🏷️ Header
+          // Header
           const heading = document.createElement("h3");
           heading.textContent = "Full Code";
           heading.style.color = "#3A82F7";
@@ -734,7 +733,7 @@ async function generateFullCode() {
           heading.style.marginBottom = "15px";
           codeDiv.appendChild(heading);
 
-          // 🧠 Code Block
+          // Code Block
           const codeBlock = document.createElement("pre");
           const codeElement = document.createElement("code");
           codeElement.className = 'language-java';
@@ -743,7 +742,7 @@ async function generateFullCode() {
           codeDiv.appendChild(codeBlock);
           Prism.highlightElement(codeElement);
 
-          // 📋 Copy Button
+          // Copy Button
           const copyButton = document.createElement("button");
           copyButton.textContent = "Copy Code";
           copyButton.style.marginTop = "12px";
@@ -774,17 +773,14 @@ async function generateFullCode() {
           output.appendChild(codeDiv);
 
         } else {
-          alert("❌ Failed to generate full code.");
+          showErrorToast("Failed to generate full code.");
         }
       }
     );
   } catch (error) {
-    document.getElementById("output").innerText =
-      "Error extracting code: " + error;
+      showErrorToast("Error in generating code ");
   }
 }
-
-
 
 
 
@@ -819,7 +815,7 @@ async function generateFullCode() {
     floatingWindow.style.position = "fixed";
     floatingWindow.style.top = "100px";
     floatingWindow.style.left = "100px";
-    floatingWindow.style.width = "400px";
+    floatingWindow.style.width = "450px";
     floatingWindow.style.height = "500px";
     floatingWindow.style.background = "black";
     floatingWindow.style.border = "2px solid black";
@@ -844,10 +840,10 @@ async function generateFullCode() {
   </div>
 
   <div id="floatingContent" style="position:sticky;top:52px;background-color:#1A1A40;padding:10px 10px;display:flex;flex-wrap:wrap;gap:5px;z-index:9;">
-    <button class="floating-btn" id="scrapeBtn">Scrape</button>
+    <button class="floating-btn" id="scrapeBtn">Fetch</button>
     <button class="floating-btn" id="hintBtn">Hints</button>
     <button class="floating-btn" id="testcasesBtn">Test Cases</button>
-    <button class="floating-btn" id="thinkTestcasesBtn">Think Test Cases</button>
+    <button class="floating-btn" id="thinkTestcasesBtn">Think Cases</button>
     <button class="floating-btn" id="analyzeBtn">Analyze Code</button>
     <button class="floating-btn" id="completeCode">Full Code</button>
   </div>
@@ -858,23 +854,59 @@ async function generateFullCode() {
 `;
 
 
+//     const style = document.createElement("style");
+//     style.innerHTML = `
+//     .floating-btn {
+//   margin: 5px;
+//   padding: 8px 14px;
+//   background-color: #3A82F7;
+//   color: #FFFFFF;
+//   border: 1px solid #1E40AF;
+//   border-radius: 5px;
+//   cursor: pointer;
+//   transition: background 0.2s ease;
+//   flex-shrink: 0;
+// }
+// .floating-btn:hover {
+//   background-color: #2563EB;
+// }
+//  `
+
+
     const style = document.createElement("style");
-    style.innerHTML = `
-    .floating-btn {
-  margin: 5px;
-  padding: 8px 14px;
-  background-color: #3A82F7;
-  color: #FFFFFF;
-  border: 1px solid #1E40AF;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background 0.2s ease;
-  flex-shrink: 0;
-}
-.floating-btn:hover {
-  background-color: #2563EB;
-}
- `
+style.innerHTML = `
+  .floating-btn {
+    width: 120px;
+    height: 48px;
+    margin: 5px;
+    padding: 8px;
+    background-color: #3A82F7;
+    color: #FFFFFF;
+    border: 1px solid #1E40AF;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    flex-shrink: 0;
+
+    /* Center the text cleanly */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    /* Allow wrapping */
+    white-space: normal;
+    text-align: center;
+    font-size: 16px;
+    line-height: 1.2;
+  }
+
+  .floating-btn:hover {
+    background-color: #2563EB;
+  }
+`;
+
+
+
 
     document.head.appendChild(style);
 
@@ -895,7 +927,6 @@ async function generateFullCode() {
         leetCodeData.thinkTestCases = null;
       });
 
-    // Add your button logic here
     document
       .getElementById("scrapeBtn")
       .addEventListener("click", scrapeLeetCodeData);
