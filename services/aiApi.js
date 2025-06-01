@@ -1,207 +1,42 @@
 import {API_KEY} from './config.js'
 
 export async function sendToGeminiAPI(prompt) {
-  const apiKey = API_KEY; 
-  const apiUrl = "https://openrouter.ai/api/v1/chat/completions";
+  const apiKey = "AIzaSyARLqcc9vHAE0W1HdpvkuNVs_P9wiW63jo"
+
+  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
   try {
     const response = await fetch(apiUrl, {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${apiKey}`,
         "Content-Type": "application/json",
-        "X-Title": "LeetGrow Title", // Optional title for usage tracking
       },
       body: JSON.stringify({
-        model: "google/gemma-3n-e4b-it:free",
-        messages: [
+        contents: [
           {
-            role: "user",
-            content: prompt
-          }
-        ]
+            parts: [{ text: prompt }],
+          },
+        ],
       }),
     });
 
     const data = await response.json();
 
     if (data.error) {
-      console.error("OpenRouter API Error:", data.error);
-      return "OpenRouter API error: " + data.error.message;
+      console.error("Gemini API Error:", data.error);
+      return "Gemini API error: " + data.error.message;
     }
 
-    const aiAnswer = data.choices?.[0]?.message?.content?.trim();
+    const aiAnswer = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
     return aiAnswer;
   } catch (error) {
-    console.error("Error calling OpenRouter API:", error);
+    // console.error("Error calling Gemini API:", error);
     return "Error occurred!";
   }
 }
 
 
 export async function sendTestcasePromptToGeminiAPI(questionContent,givenTestcases) {
- /* // const prompt = `Given the following LeetCode problem description:
-  // ${questionContent}
-  
-  // Your task is to deeply analyze the problem and generate **eight test cases** that cover all edge cases and verify the correctness of the solution.
-  
-  // Only output the test case inputs, each input on a new line, exactly in the following format:
-  
-  // Example 1:
-  // Input: nums = [1,3,2,3,3], k = 2
-  // Input: nums = [1,4,2,1], k = 3
-  
-  // Output format:
-  // [1,3,2,3,3]
-  // 2
-  // [1,4,2,1]
-  // 3
-  
-  // Example 2:
-  // Input: nums1 = [1,2,2,1], nums2 = [2,2], k = 3, m = 6
-  // Input: nums1 = [4,9,5], nums2 = [9,4,9,8,4], k = 5, n = 8
-  
-  // Output format:
-  // [1,2,2,1]
-  // [2,2]
-  // 3
-  // 6
-  // [4,9,5]
-  // [9,4,9,8,4]
-  // 5
-  // 8
-  
-  // Only follow this exact output style with no additional explanation or formatting.`;
-
-  // your existing function that calls Gemini API
-  */
- 
-  /*const prompt = `You are given a LeetCode-style problem:
-  
-${questionContent}
-
-Your task is to deeply analyze the problem and generate **exactly eight (8) test cases** that cover all possible edge cases and verify the correctness of a solution.
-
-🚨 VERY IMPORTANT 🚨: Only output **the test case inputs**, one **value per line**, and **strictly follow the exact format and order shown below**. 
-
-🔒 DO NOT include any explanation or extra formatting.  
-🔒 DO NOT put multiple values in a single line.  
-🔒 DO NOT add quotation marks, variable names, or labels like "Input:"
-
----
-
-🧪 Format Instructions:
-
-- If the problem input has variables like:  
-  \`nums = [1,3,2,3,3]\`, \`k = 2\`  
-  then output should be:
-  \`\`\`
-  [1,3,2,3,3]
-  2
-  \`\`\`
-
-- If input has more than one array and multiple values like:  
-  \`nums1 = [1,2,2,1]\`, \`nums2 = [2,2]\`, \`k = 3\`, \`m = 6\`  
-  then output should be:
-  \`\`\`
-  [1,2,2,1]
-  [2,2]
-  3
-  6
-  \`\`\`
-
----
-
-✅ Example Output (Follow This Order Exactly):
-
-Example 1 (2 test cases):
-\`\`\`
-[1,3,2,3,3]
-2
-[1,4,2,1]
-3
-\`\`\`
-
-Example 2 (2 test cases):
-\`\`\`
-[1,2,2,1]
-[2,2]
-3
-6
-[4,9,5]
-[9,4,9,8,4]
-5
-8
-\`\`\`
-
----
-
-⚠️ Summary of Output Rules:
-- Only raw input values, **one per line**.
-- Maintain the **same order of inputs** as shown in the problem description.
-- No headings, labels, or explanations.
-- Use **exact array syntax** like \`[1,2,3]\` and numbers like \`5\`.
-
-Now, using this format and the given problem, generate 8 test case inputs.
-`;*/
-
- 
- /* const prompt = `You are given a LeetCode-style problem.
-
-📘 Problem Description:
-${questionContent}
-
----
-
-🔎 Test Case Format Context:
-The examples given in the above problem description include test case **input formats**. Below is the **actual format** used in those examples:
-
-${givenTestcases}
-
-Use the **structure, style, and input ordering** of the examples above as a reference. You must analyze and follow this exact formatting when creating new test cases.
-
----
-
-🎯 Your Task:
-Generate exactly **eight (8)** new test case inputs that:
-- Fully test the problem across all edge cases and conditions.
-- Strictly follow the **exact same input structure and order** as shown in the examples.
-- Help validate the correctness and robustness of any solution.
-
----
-
-⚠️ Output Rules – Follow These STRICTLY:
-
-✅ Output:
-- Only raw test **input values**, one **value per line**.
-- Respect the **same input order** as in the given examples.
-- Use standard JSON-like syntax: arrays as \`[1,2,3]\`, numbers as \`5\`, strings as \`"abc"\` (only if shown in examples).
-
-⛔ DO NOT:
-- Add labels like "Input:" or "Example:"
-- Include any extra explanation or text.
-- Put multiple values on a single line.
-- Add quotes unless they appear in the given examples.
-
----
-
-✅ Example (format derived from given examples):
-
-If the given examples above look like:
-\`\`\`
-[1,2,3]
-5
-[4,5,6]
-2
-\`\`\`
-
-Then your generated test cases must follow this same structure exactly.
-
----
-
-Now, based on the problem and using the example format above as a template, generate **eight complete test case inputs**.
-`;
-*/
 
 console.log("Given TestCases Format :", givenTestcases);
   const prompt = `You are given a LeetCode-style problem:
@@ -341,7 +176,7 @@ export async function sendFullCodePromptToGeminiAPI(content, lang, code){
 
 const prompt =`Given the following LeetCode problem description :
   ${content}
-  By deeply analyze your task is to generate full code in language :${lang} and use the format of class and function name which is same as leetcode format from this code  :${code} . Provide correct code, explanatory with comments. 
+  By deeply analyze your task is to generate full code in language :${lang} and use the format of class and function name which is same as leetcode format from this code  :${code} . Provide correct code, explanation with comments and also do not provide explanation like in md file but provide like comments in code editor. Also provide detail explanation of code at the end of code in form of comments.
   `
 
   return sendToGeminiAPI(prompt);
