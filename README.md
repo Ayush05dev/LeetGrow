@@ -7,7 +7,7 @@
 ## 🔧 How to Install Manually (No Store Needed)
 
 1. **Download the Extension ZIP**
-   - [Click here to download](https://drive.google.com/uc?export=download&id=1mcuke-89uUcgNROzdZ7sanFUZ__Xeem9
+   - [Click here to download](https://drive.google.com/uc?export=download&id=1bwyFwDcd4vfgbcmHaCKYEgQpI4PDgILE
 )
 
 2. **Extract the ZIP** to a folder on your computer.
