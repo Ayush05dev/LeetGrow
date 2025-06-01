@@ -7,7 +7,8 @@
 ## 🔧 How to Install Manually (No Store Needed)
 
 1. **Download the Extension ZIP**
-   - [Click here to download](https://github.com/Ayush05dev/LeetGrow/archive/refs/heads/deployment.zip)
+   - [Click here to download](https://drive.google.com/uc?export=download&id=17AxLf4sG26wgp6VZEfD5V2re-26GiKar
+)
 
 2. **Extract the ZIP** to a folder on your computer.
 
