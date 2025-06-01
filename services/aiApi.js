@@ -1,7 +1,7 @@
 import {API_KEY} from './config.js'
 
 export async function sendToGeminiAPI(prompt) {
-  const apiKey = API_KEY; 
+  const apiKey = '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'; 
   const apiUrl = "https://openrouter.ai/api/v1/chat/completions";
 
   try {
