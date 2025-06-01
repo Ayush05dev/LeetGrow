@@ -1,6 +1,6 @@
-const toastShowScript = document.createElement('script');
-toastShowScript.src = chrome.runtime.getURL('toastify/toast-show.js');
-document.body.appendChild(toastShowScript);
+// const toastShowScript = document.createElement('script');
+// toastShowScript.src = chrome.runtime.getURL('toastify/toast-show.js');
+// document.body.appendChild(toastShowScript);
 
 
 const leetCodeData = {
